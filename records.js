@@ -99,19 +99,6 @@ window.HEALTH_DATA = {
                         "h":  5712
                     },
                     {
-                        "date":  "2020-10-20",
-                        "place":  "Specsavers Melbourne Central",
-                        "category":  "Visual Field",
-                        "test":  "Humphrey 24-2 Threshold (SITA Fast)",
-                        "eye":  "OD",
-                        "result":  "VFI 78% â€” phone photo of the same OD report",
-                        "notes":  "Duplicate (phone photo) of the right-eye 2020-10-20 visual field.",
-                        "full":  "images/2020-10-20_Specsavers_VisualField-24-2_OD_photo.jpg",
-                        "thumb":  "images/thumbs/2020-10-20_Specsavers_VisualField-24-2_OD_photo.jpg",
-                        "w":  3072,
-                        "h":  4096
-                    },
-                    {
                         "date":  "2023-02-23",
                         "place":  "Eye Surgery Associates",
                         "category":  "Specialist Letter",
