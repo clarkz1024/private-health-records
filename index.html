@@ -102,7 +102,10 @@
     background:linear-gradient(to top,rgba(0,0,0,.78),rgba(0,0,0,0));color:#fff;font-size:14px;pointer-events:none;z-index:1500}
   .pswp__caption-bar .c-title{font-weight:700;font-size:15px}
   .pswp__caption-bar .c-sub{opacity:.85;font-size:13px;margin-top:2px}
-  .pswp__button--rotate,.pswp__button--print,.pswp__button--download{font-size:19px}
+  .pswp__button--rotate,.pswp__button--print,.pswp__button--download{
+    font-size:19px;line-height:50px;color:#fff !important;opacity:.85;
+    text-shadow:0 1px 3px rgba(0,0,0,.8)}
+  .pswp__button--rotate:hover,.pswp__button--print:hover,.pswp__button--download:hover{opacity:1}
 
   /* Print: show only the selected report */
   #printArea{display:none}
@@ -157,6 +160,9 @@
 import PhotoSwipeLightbox from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.js';
 
 const DATA = window.HEALTH_DATA;
+// Cache-buster: bump this whenever image files change so browsers refetch them.
+const ASSET_V = '2026-06-17b';
+DATA.records.forEach(r=>{ r.thumb += '?v='+ASSET_V; r.full += '?v='+ASSET_V; });
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const EYE_LABEL={OD:'Right',OS:'Left',OU:'Both'};
 
@@ -265,7 +271,7 @@ lightbox.on('uiRegister',()=>{
     name:'download',className:'pswp__button--download',order:7,isButton:true,
     title:'Download',html:'⤓',
     onClick:()=>{const r=currentList[lightbox.pswp.currIndex];if(!r)return;
-      const a=document.createElement('a');a.href=r.full;a.download=r.full.split('/').pop();
+      const a=document.createElement('a');a.href=r.full;a.download=r.full.split('/').pop().split('?')[0];
       document.body.appendChild(a);a.click();a.remove();}
   });
   // caption bar
@@ -301,6 +307,10 @@ function openAt(index){
 }
 
 render();
+
+// Deep-link: open a specific report directly, e.g. #open=8
+const _m=location.hash.match(/open=(\d+)/);
+if(_m){const i=+_m[1];if(i>=0&&i<currentList.length)openAt(i);}
 </script>
 </body>
 </html>
