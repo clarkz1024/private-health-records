@@ -102,7 +102,17 @@
     background:linear-gradient(to top,rgba(0,0,0,.78),rgba(0,0,0,0));color:#fff;font-size:14px;pointer-events:none;z-index:1500}
   .pswp__caption-bar .c-title{font-weight:700;font-size:15px}
   .pswp__caption-bar .c-sub{opacity:.85;font-size:13px;margin-top:2px}
-  .pswp__button--rotate{font-size:20px}
+  .pswp__button--rotate,.pswp__button--print,.pswp__button--download{font-size:19px}
+
+  /* Print: show only the selected report */
+  #printArea{display:none}
+  @media print{
+    body>*{display:none!important}
+    #printArea{display:block!important}
+    #printArea figure{margin:0;text-align:center}
+    #printArea img{max-width:100%;max-height:93vh}
+    #printArea figcaption{margin-top:10px;font:600 12px sans-serif;color:#000}
+  }
 
   @media(min-width:560px){
     .pinfo h1{font-size:27px}
@@ -139,6 +149,8 @@
     <span id="fcount"></span>
   </footer>
 </div>
+
+<div id="printArea"></div>
 
 <script src="records.js"></script>
 <script type="module">
@@ -242,6 +254,20 @@ lightbox.on('uiRegister',()=>{
     onClick:()=>{const ps=lightbox.pswp;const i=ps.currIndex;
       rotations[i]=((rotations[i]||0)+90)%360;applyRot(ps);}
   });
+  // print button
+  lightbox.pswp.ui.registerElement({
+    name:'print',className:'pswp__button--print',order:8,isButton:true,
+    title:'Print',html:'🖨',
+    onClick:()=>{const r=currentList[lightbox.pswp.currIndex];if(r)printImage(r,rotations[lightbox.pswp.currIndex]||0);}
+  });
+  // download button
+  lightbox.pswp.ui.registerElement({
+    name:'download',className:'pswp__button--download',order:7,isButton:true,
+    title:'Download',html:'⤓',
+    onClick:()=>{const r=currentList[lightbox.pswp.currIndex];if(!r)return;
+      const a=document.createElement('a');a.href=r.full;a.download=r.full.split('/').pop();
+      document.body.appendChild(a);a.click();a.remove();}
+  });
   // caption bar
   lightbox.pswp.ui.registerElement({
     name:'caption',appendTo:'wrapper',
@@ -253,6 +279,15 @@ lightbox.on('uiRegister',()=>{
     }
   });
 });
+function printImage(r,deg){
+  const area=document.getElementById('printArea');
+  const rot=((deg%360)+360)%360;
+  const cap=`${fmtDate(r.date)} — ${r.test}${r.eye?' ('+EYE_LABEL[r.eye]+' eye)':''} · ${r.place}`;
+  area.innerHTML=`<figure><img src="${r.full}" style="transform:rotate(${rot}deg)"><figcaption>${cap}</figcaption></figure>`;
+  const img=area.querySelector('img');
+  const go=()=>window.print();
+  if(img.complete)go(); else img.onload=go;
+}
 function applyRot(ps){const r=rotations[ps.currIndex]||0;
   const el=ps.currSlide&&ps.currSlide.content&&ps.currSlide.content.element;
   if(el&&el.tagName==='IMG'){el.style.transition='transform .2s';el.style.transform=`rotate(${r}deg)`;}}
