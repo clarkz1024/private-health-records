@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Health Records — Lei (Clark) Zhu</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.css">
+<style>
+  :root{
+    --bg:#eef2f5; --surface:#ffffff; --ink:#0f2230; --muted:#5b7080;
+    --line:#dde5ea; --accent:#0d8e8a; --accent-d:#0a6f6c;
+    --od:#e07b39; --od-bg:#fdf0e7;      /* right eye  */
+    --os:#2f74d0; --os-bg:#eaf1fb;      /* left eye   */
+    --ou:#7b53c6; --ou-bg:#f0eafb;      /* both eyes  */
+    --blood:#c0392b; --blood-bg:#fbeae8;
+    --letter:#4b6472; --letter-bg:#eef2f4;
+    --shadow:0 1px 2px rgba(15,34,48,.06),0 4px 16px rgba(15,34,48,.06);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.45;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+
+  /* ---------- Patient header ---------- */
+  .patient{
+    display:flex;gap:16px;align-items:center;
+    background:linear-gradient(135deg,#ffffff,#f6fafa);
+    border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  }
+  .patient::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;
+    background:linear-gradient(90deg,var(--accent),var(--ou),var(--od))}
+  .avatar{flex:0 0 auto;width:84px;height:84px;border-radius:50%;
+    background:#dfe9ea;display:flex;align-items:center;justify-content:center;
+    overflow:hidden;border:3px solid #fff;box-shadow:0 0 0 1px var(--line)}
+  .avatar img{width:100%;height:100%;object-fit:cover}
+  .avatar .initials{font-size:30px;font-weight:700;color:var(--accent-d)}
+  .pinfo h1{margin:0 0 4px;font-size:24px;letter-spacing:-.3px}
+  .pinfo .meta{color:var(--muted);font-size:14px;font-weight:500}
+  .pinfo .meta b{color:var(--ink)}
+  .dx{display:inline-flex;align-items:center;gap:7px;margin-top:10px;
+    background:var(--od-bg);color:#a8521d;border:1px solid #f1d3bd;
+    padding:6px 12px;border-radius:999px;font-size:13px;font-weight:600}
+  .dx::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--od)}
+
+  /* ---------- Controls ---------- */
+  .controls{margin:18px 0 6px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+  .chiprow{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{appearance:none;border:1px solid var(--line);background:#fff;color:var(--muted);
+    padding:7px 14px;border-radius:999px;font-size:13.5px;font-weight:600;cursor:pointer;
+    transition:.15s;white-space:nowrap}
+  .chip:hover{border-color:var(--accent)}
+  .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+  .sort{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);
+    padding:7px 12px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;display:flex;gap:6px;align-items:center}
+  .legend{color:var(--muted);font-size:12.5px;margin:6px 2px 0}
+  .legend b{color:var(--ink)}
+
+  /* ---------- Timeline ---------- */
+  #timeline{margin-top:18px;position:relative}
+  .group{position:relative;padding-left:30px;margin-bottom:10px}
+  .group::before{content:"";position:absolute;left:9px;top:6px;bottom:-10px;width:2px;background:var(--line)}
+  .group:last-child::before{display:none}
+  .ghead{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;position:relative}
+  .ghead .dot{position:absolute;left:-30px;top:2px;width:20px;height:20px;border-radius:50%;
+    background:#fff;border:3px solid var(--accent);box-shadow:0 0 0 4px var(--bg)}
+  .ghead h2{margin:0;font-size:18px;letter-spacing:-.2px}
+  .ghead .place{color:var(--muted);font-size:13.5px;font-weight:500;margin-top:2px}
+  .ghead .count{color:var(--accent-d);font-weight:600}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:26px}
+  .card{appearance:none;text-align:left;padding:0;cursor:pointer;
+    background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;box-shadow:var(--shadow);transition:.16s;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(15,34,48,.12);border-color:#cfe0e0}
+  .thumb{position:relative;aspect-ratio:4/3;background:#f2f5f7;overflow:hidden}
+  .thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+  .thumb .zoom{position:absolute;right:8px;bottom:8px;width:26px;height:26px;border-radius:50%;
+    background:rgba(15,34,48,.62);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;backdrop-filter:blur(2px)}
+  .eye{position:absolute;left:8px;top:8px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.2px;color:#fff}
+  .eye.OD{background:var(--od)} .eye.OS{background:var(--os)} .eye.OU{background:var(--ou)}
+  .card-body{padding:10px 12px 12px}
+  .tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:3px 8px;border-radius:6px;margin-bottom:7px}
+  .tag.VisualField{color:var(--accent-d);background:#e2f1f0}
+  .tag.OCT{color:var(--ou);background:var(--ou-bg)}
+  .tag.BloodTest{color:var(--blood);background:var(--blood-bg)}
+  .tag.SpecialistLetter{color:var(--letter);background:var(--letter-bg)}
+  .card .test{font-size:14px;font-weight:600;line-height:1.3}
+  .card .res{font-size:12.5px;color:var(--muted);margin-top:5px}
+
+  footer{color:var(--muted);font-size:12px;text-align:center;margin:24px 0 12px;line-height:1.6}
+
+  /* PhotoSwipe caption + rotate */
+  .pswp__caption-bar{position:absolute;left:0;right:0;bottom:0;padding:14px 18px calc(14px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top,rgba(0,0,0,.78),rgba(0,0,0,0));color:#fff;font-size:14px;pointer-events:none;z-index:1500}
+  .pswp__caption-bar .c-title{font-weight:700;font-size:15px}
+  .pswp__caption-bar .c-sub{opacity:.85;font-size:13px;margin-top:2px}
+  .pswp__button--rotate{font-size:20px}
+
+  @media(min-width:560px){
+    .pinfo h1{font-size:27px}
+    .cards{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="patient">
+    <div class="avatar" id="avatar">
+      <img src="images/patient-photo.jpg" alt="" onerror="this.remove();document.getElementById('initials').style.display='flex'">
+      <span class="initials" id="initials" style="display:none">CZ</span>
+    </div>
+    <div class="pinfo">
+      <h1 id="pName"></h1>
+      <div class="meta" id="pMeta"></div>
+      <div class="dx" id="pDx"></div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="chiprow" id="catChips"></div>
+    <button class="sort" id="sortBtn"><span id="sortIcon">↑</span> <span id="sortLbl">Oldest first</span></button>
+  </div>
+  <div class="chiprow" id="eyeChips" style="margin-top:8px"></div>
+  <div class="legend"><b>OD</b> = Right eye &nbsp;·&nbsp; <b>OS</b> = Left eye &nbsp;·&nbsp; <b>OU</b> = Both eyes. &nbsp;Tap any report to zoom; pinch / scroll to magnify, swipe to move through the timeline.</div>
+
+  <main id="timeline"></main>
+
+  <footer>
+    Private medical records · prepared for clinical review<br>
+    <span id="fcount"></span>
+  </footer>
+</div>
+
+<script src="records.js"></script>
+<script type="module">
+import PhotoSwipeLightbox from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe-lightbox.esm.js';
+
+const DATA = window.HEALTH_DATA;
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const EYE_LABEL={OD:'Right',OS:'Left',OU:'Both'};
+
+// ---- patient header ----
+function ageFrom(dob){const d=new Date(dob),n=new Date();let a=n.getFullYear()-d.getFullYear();
+  const m=n.getMonth()-d.getMonth(); if(m<0||(m===0&&n.getDate()<d.getDate()))a--; return a;}
+const p=DATA.patient;
+document.getElementById('pName').textContent=p.name;
+const dobD=new Date(p.dob);
+document.getElementById('pMeta').innerHTML=
+  `DOB <b>${dobD.getDate()} ${MONTHS[dobD.getMonth()].slice(0,3)} ${dobD.getFullYear()}</b> &nbsp;·&nbsp; Age <b>${ageFrom(p.dob)}</b> &nbsp;·&nbsp; <b>${p.gender}</b>`;
+document.getElementById('pDx').textContent=DATA.diagnosis;
+document.getElementById('initials').textContent=p.name.replace(/\(.*?\)/g,'').trim().split(/\s+/).map(s=>s[0]).join('').slice(0,2).toUpperCase();
+
+// ---- state ----
+const cats=[...new Set(DATA.records.map(r=>r.category))];
+let activeCat='All', activeEye='All', sortAsc=true;
+
+function fmtDate(iso){const d=new Date(iso);return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;}
+function slug(s){return s.replace(/[^a-z]/gi,'');}
+
+// chips
+function buildChips(el,items,getActive,setActive){
+  el.innerHTML='';
+  items.forEach(it=>{
+    const b=document.createElement('button');b.className='chip';b.textContent=it.label;
+    b.setAttribute('aria-pressed',getActive()===it.val);
+    b.onclick=()=>{setActive(it.val);render();
+      [...el.children].forEach((c,i)=>c.setAttribute('aria-pressed',items[i].val===getActive()));};
+    el.appendChild(b);
+  });
+}
+buildChips(document.getElementById('catChips'),
+  [{label:'All reports',val:'All'},...cats.map(c=>({label:c,val:c}))],
+  ()=>activeCat,v=>activeCat=v);
+const eyesPresent=['OD','OS','OU'].filter(e=>DATA.records.some(r=>r.eye===e));
+buildChips(document.getElementById('eyeChips'),
+  [{label:'All eyes',val:'All'},...eyesPresent.map(e=>({label:EYE_LABEL[e]+' eye ('+e+')',val:e}))],
+  ()=>activeEye,v=>activeEye=v);
+
+document.getElementById('sortBtn').onclick=()=>{
+  sortAsc=!sortAsc;
+  document.getElementById('sortIcon').textContent=sortAsc?'↑':'↓';
+  document.getElementById('sortLbl').textContent=sortAsc?'Oldest first':'Newest first';
+  render();
+};
+
+// ---- render timeline ----
+let currentList=[];
+function render(){
+  const tl=document.getElementById('timeline');tl.innerHTML='';
+  let recs=DATA.records.filter(r=>(activeCat==='All'||r.category===activeCat)&&(activeEye==='All'||r.eye===activeEye));
+  // group by date
+  const dates=[...new Set(recs.map(r=>r.date))].sort();
+  if(!sortAsc)dates.reverse();
+  currentList=[];
+  dates.forEach(date=>{
+    const items=recs.filter(r=>r.date===date);
+    const places=[...new Set(items.map(r=>r.place))].join(' · ');
+    const sec=document.createElement('section');sec.className='group';
+    sec.innerHTML=`<div class="ghead"><span class="dot"></span><div>
+        <h2>${fmtDate(date)}</h2>
+        <div class="place">${places} &nbsp;·&nbsp; <span class="count">${items.length} report${items.length>1?'s':''}</span></div>
+      </div><div class="cards"></div>`;
+    const cards=sec.querySelector('.cards');
+    items.forEach(r=>{
+      const idx=currentList.length;currentList.push(r);
+      const eyeBadge=r.eye?`<span class="eye ${r.eye}">${EYE_LABEL[r.eye]}</span>`:'';
+      const res=r.result?`<div class="res">${r.result}</div>`:'';
+      const b=document.createElement('button');b.className='card';
+      b.innerHTML=`<div class="thumb">${eyeBadge}<img loading="lazy" src="${r.thumb}" alt="${r.test}"><span class="zoom">⤢</span></div>
+        <div class="card-body">
+          <span class="tag ${slug(r.category)}">${r.category}</span>
+          <div class="test">${r.test}</div>${res}
+        </div>`;
+      b.onclick=()=>openAt(idx);
+      cards.appendChild(b);
+    });
+    tl.appendChild(sec);
+  });
+  document.getElementById('fcount').textContent=`Showing ${currentList.length} of ${DATA.records.length} reports`;
+}
+
+// ---- PhotoSwipe ----
+const lightbox=new PhotoSwipeLightbox({
+  pswpModule:()=>import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.js'),
+  bgOpacity:.92, initialZoomLevel:'fit', secondaryZoomLevel:2, maxZoomLevel:5, padding:{top:10,bottom:64,left:10,right:10}
+});
+let rotations={};
+lightbox.on('uiRegister',()=>{
+  // rotate button
+  lightbox.pswp.ui.registerElement({
+    name:'rotate',className:'pswp__button--rotate',order:9,isButton:true,
+    title:'Rotate',html:'⟳',
+    onClick:()=>{const ps=lightbox.pswp;const i=ps.currIndex;
+      rotations[i]=((rotations[i]||0)+90)%360;applyRot(ps);}
+  });
+  // caption bar
+  lightbox.pswp.ui.registerElement({
+    name:'caption',appendTo:'wrapper',
+    onInit:(el)=>{el.className='pswp__caption-bar';
+      lightbox.pswp.on('change',()=>{const r=currentList[lightbox.pswp.currIndex];if(!r)return;
+        const bits=[r.place];if(r.eye)bits.push(EYE_LABEL[r.eye]+' eye');
+        el.innerHTML=`<div class="c-title">${fmtDate(r.date)} — ${r.test}</div>
+          <div class="c-sub">${bits.join(' · ')}${r.result?' — '+r.result:''}${r.notes?'<br>'+r.notes:''}</div>`;});
+    }
+  });
+});
+function applyRot(ps){const r=rotations[ps.currIndex]||0;
+  const el=ps.currSlide&&ps.currSlide.content&&ps.currSlide.content.element;
+  if(el&&el.tagName==='IMG'){el.style.transition='transform .2s';el.style.transform=`rotate(${r}deg)`;}}
+lightbox.on('contentActivate',()=>applyRot(lightbox.pswp));
+lightbox.init();
+
+function openAt(index){
+  rotations={};
+  lightbox.options.dataSource=currentList.map(r=>({src:r.full,width:r.w,height:r.h,alt:r.test}));
+  lightbox.loadAndOpen(index);
+}
+
+render();
+</script>
+</body>
+</html>
