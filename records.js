@@ -1,7 +1,7 @@
 ﻿// Auto-generated from images/manifest.json. Edit there and regenerate.
 window.HEALTH_DATA = {
     "patient":  {
-                    "name":  "Lei (Clark) Zhu",
+                    "name":  "Lei Zhu (Clark)",
                     "dob":  "1992-06-23",
                     "gender":  "Male"
                 },
@@ -97,32 +97,6 @@ window.HEALTH_DATA = {
                         "thumb":  "images/thumbs/2020-10-20_Specsavers_VisualField-24-2_OS.jpg",
                         "w":  3213,
                         "h":  5712
-                    },
-                    {
-                        "date":  "2023-02-23",
-                        "place":  "Eye Surgery Associates",
-                        "category":  "Specialist Letter",
-                        "test":  "Consultation letter (A/Prof Simon Skalicky)",
-                        "eye":  "OD",
-                        "result":  "Diagnosis: Right Posner-Schlossman syndrome",
-                        "notes":  "Page 1/2. VA R 6/6 L 6/6; IOP R 12 L 15; Pachymetry R 555um L 577um. Right RAPD, right cupped disc C/D 0.8, left C/D 0.4. Treatment: Cosopt bd RE, wean Pred Forte.",
-                        "full":  "images/2023-02-23_EyeSurgeryAssociates_ConsultLetter-PosnerSchlossman_p1.jpg",
-                        "thumb":  "images/thumbs/2023-02-23_EyeSurgeryAssociates_ConsultLetter-PosnerSchlossman_p1.jpg",
-                        "w":  3072,
-                        "h":  4096
-                    },
-                    {
-                        "date":  "2023-02-23",
-                        "place":  "Eye Surgery Associates",
-                        "category":  "Specialist Letter",
-                        "test":  "Consultation letter (A/Prof Simon Skalicky)",
-                        "eye":  null,
-                        "result":  "Follow up 4-5 weeks",
-                        "notes":  "Page 2/2. Signed by A/Prof Simon Skalicky, Glaucoma \u0026 Cataract Specialist.",
-                        "full":  "images/2023-02-23_EyeSurgeryAssociates_ConsultLetter-PosnerSchlossman_p2.jpg",
-                        "thumb":  "images/thumbs/2023-02-23_EyeSurgeryAssociates_ConsultLetter-PosnerSchlossman_p2.jpg",
-                        "w":  3072,
-                        "h":  4096
                     },
                     {
                         "date":  "2023-02-23",

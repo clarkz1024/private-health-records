@@ -1,6 +1,6 @@
 {
   "patient": {
-    "name": "Lei (Clark) Zhu",
+    "name": "Lei Zhu (Clark)",
     "dob": "1992-06-23",
     "gender": "Male"
   },
@@ -89,30 +89,6 @@
       "result": "VFI 100%, GHT Within Normal Limits, MD -0.05 dB (low reliability)",
       "referredBy": null,
       "notes": "Left eye field normal."
-    },
-    {
-      "original": "Weixin Image_20260617180128_41_2.jpg",
-      "newName": "2023-02-23_EyeSurgeryAssociates_ConsultLetter-PosnerSchlossman_p1.jpg",
-      "date": "2023-02-23",
-      "place": "Eye Surgery Associates",
-      "category": "Specialist Letter",
-      "test": "Consultation letter (A/Prof Simon Skalicky)",
-      "eye": "OD",
-      "result": "Diagnosis: Right Posner-Schlossman syndrome",
-      "referredBy": "John Ly (OPSM Brunswick)",
-      "notes": "Page 1/2. VA R 6/6 L 6/6; IOP R 12 L 15; Pachymetry R 555um L 577um. Right RAPD, right cupped disc C/D 0.8, left C/D 0.4. Treatment: Cosopt bd RE, wean Pred Forte."
-    },
-    {
-      "original": "Weixin Image_20260617180131_42_2.jpg",
-      "newName": "2023-02-23_EyeSurgeryAssociates_ConsultLetter-PosnerSchlossman_p2.jpg",
-      "date": "2023-02-23",
-      "place": "Eye Surgery Associates",
-      "category": "Specialist Letter",
-      "test": "Consultation letter (A/Prof Simon Skalicky)",
-      "eye": null,
-      "result": "Follow up 4-5 weeks",
-      "referredBy": null,
-      "notes": "Page 2/2. Signed by A/Prof Simon Skalicky, Glaucoma & Cataract Specialist."
     },
     {
       "original": "Weixin Image_20260617180145_44_2.jpg",
