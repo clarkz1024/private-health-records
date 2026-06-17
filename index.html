@@ -102,10 +102,37 @@
     background:linear-gradient(to top,rgba(0,0,0,.78),rgba(0,0,0,0));color:#fff;font-size:14px;pointer-events:none;z-index:1500}
   .pswp__caption-bar .c-title{font-weight:700;font-size:15px}
   .pswp__caption-bar .c-sub{opacity:.85;font-size:13px;margin-top:2px}
-  .pswp__button--rotate,.pswp__button--print,.pswp__button--download{
+  .pswp__button--rotate,.pswp__button--print,.pswp__button--download,.pswp__button--info{
     font-size:19px;line-height:50px;color:#fff !important;opacity:.85;
     text-shadow:0 1px 3px rgba(0,0,0,.8)}
-  .pswp__button--rotate:hover,.pswp__button--print:hover,.pswp__button--download:hover{opacity:1}
+  .pswp__button--rotate:hover,.pswp__button--print:hover,.pswp__button--download:hover,.pswp__button--info:hover{opacity:1}
+
+  /* Left details panel */
+  .pswp__info{position:absolute;top:0;left:0;bottom:0;width:312px;max-width:86vw;z-index:1490;
+    background:rgba(12,26,38,.9);backdrop-filter:blur(10px);color:#eaf1f4;
+    padding:58px 22px 24px;overflow-y:auto;box-shadow:2px 0 30px rgba(0,0,0,.45);
+    transform:translateX(-100%);transition:transform .26s ease;-webkit-overflow-scrolling:touch}
+  .pswp__info.open{transform:none}
+  .pswp__info .i-when{font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#5fc9c4}
+  .pswp__info .i-what{margin:6px 0 12px;font-size:20px;line-height:1.3;font-weight:700;color:#fff}
+  .pswp__info .i-cat{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+    padding:4px 10px;border-radius:999px;margin-bottom:18px}
+  .pswp__info .i-cat.VisualField{background:#13534f;color:#9fe7e2}
+  .pswp__info .i-cat.OCT{background:#3a2c63;color:#cdb6ff}
+  .pswp__info .i-cat.BloodTest{background:#5c241e;color:#ffb3aa}
+  .pswp__info .i-cat.SpecialistLetter{background:#2c3b44;color:#cdd9e0}
+  .pswp__info .i-list{margin:0;border-top:1px solid rgba(255,255,255,.12)}
+  .pswp__info .i-row{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+  .pswp__info dt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#8aa3b0;margin-bottom:3px}
+  .pswp__info dd{margin:0;font-size:14.5px;line-height:1.45;color:#eaf1f4}
+  .pswp__info .i-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle}
+  .pswp__info .i-dot.OD{background:var(--od)} .pswp__info .i-dot.OS{background:var(--os)} .pswp__info .i-dot.OU{background:var(--ou)}
+  .pswp__info .i-count{margin-top:18px;font-size:12px;color:#7e98a6}
+  @media(min-width:760px){
+    .pswp__info{transform:none;box-shadow:none;background:rgba(12,26,38,.72)}
+    .pswp__caption-bar{display:none}
+    .pswp__button--info{display:none}
+  }
 
   /* Print: show only the selected report */
   #printArea{display:none}
@@ -249,9 +276,24 @@ function render(){
 // ---- PhotoSwipe ----
 const lightbox=new PhotoSwipeLightbox({
   pswpModule:()=>import('https://cdn.jsdelivr.net/npm/photoswipe@5/dist/photoswipe.esm.js'),
-  bgOpacity:.92, initialZoomLevel:'fit', secondaryZoomLevel:2, maxZoomLevel:5, padding:{top:10,bottom:64,left:10,right:10}
+  bgOpacity:.92, initialZoomLevel:'fit', secondaryZoomLevel:2, maxZoomLevel:5,
+  paddingFn:(vp)=>({top:10,bottom:vp.x>=760?16:64,left:vp.x>=760?332:10,right:10})
 });
-let rotations={};
+let rotations={}, infoEl=null;
+function detailsHTML(r,i){
+  const eye=r.eye?`<span class="i-dot ${r.eye}"></span>${EYE_LABEL[r.eye]} eye (${r.eye})`:'Systemic / blood';
+  const row=(label,val)=>val?`<div class="i-row"><dt>${label}</dt><dd>${val}</dd></div>`:'';
+  return `<div class="i-when">${fmtDate(r.date)}</div>
+    <h3 class="i-what">${r.test}</h3>
+    <span class="i-cat ${slug(r.category)}">${r.category}</span>
+    <dl class="i-list">
+      ${row('Where',r.place)}
+      ${row('Eye',eye)}
+      ${row('Result',r.result)}
+      ${row('Notes',r.notes)}
+    </dl>
+    <div class="i-count">Report ${i+1} of ${currentList.length}</div>`;
+}
 lightbox.on('uiRegister',()=>{
   // rotate button
   lightbox.pswp.ui.registerElement({
@@ -274,14 +316,28 @@ lightbox.on('uiRegister',()=>{
       const a=document.createElement('a');a.href=r.full;a.download=r.full.split('/').pop().split('?')[0];
       document.body.appendChild(a);a.click();a.remove();}
   });
-  // caption bar
+  // info toggle button (for phones; panel is always shown on wide screens)
+  lightbox.pswp.ui.registerElement({
+    name:'info',className:'pswp__button--info',order:6,isButton:true,
+    title:'Details',html:'ⓘ',
+    onClick:()=>{if(infoEl)infoEl.classList.toggle('open');}
+  });
+  // left details panel
+  lightbox.pswp.ui.registerElement({
+    name:'info-panel',appendTo:'wrapper',
+    onInit:(el)=>{el.className='pswp__info';infoEl=el;
+      lightbox.pswp.on('change',()=>{const i=lightbox.pswp.currIndex;const r=currentList[i];if(!r)return;
+        el.innerHTML=detailsHTML(r,i);});
+    }
+  });
+  // compact bottom caption (phones only)
   lightbox.pswp.ui.registerElement({
     name:'caption',appendTo:'wrapper',
     onInit:(el)=>{el.className='pswp__caption-bar';
       lightbox.pswp.on('change',()=>{const r=currentList[lightbox.pswp.currIndex];if(!r)return;
         const bits=[r.place];if(r.eye)bits.push(EYE_LABEL[r.eye]+' eye');
         el.innerHTML=`<div class="c-title">${fmtDate(r.date)} — ${r.test}</div>
-          <div class="c-sub">${bits.join(' · ')}${r.result?' — '+r.result:''}${r.notes?'<br>'+r.notes:''}</div>`;});
+          <div class="c-sub">${bits.join(' · ')}${r.result?' — '+r.result:''}</div>`;});
     }
   });
 });
