@@ -92,6 +92,22 @@ These reports contain real PII: full name, DOB, home address, and **Medicare num
 data is on the open internet by the owner's explicit choice. If asked to lock it down: redact the
 Medicare number/address from images, and/or move to a password-protected host.
 
+## Translated category reports (e.g. 2026 Southwest Hospital check-up)
+A multi-section foreign-language report is split into one bilingual (EN + 中文) PDF per category,
+each shown as its own timeline entry. Generator: `tools/build_2026.py`.
+- Pipeline: `build_2026.py html` (writes HTML to %TEMP%/build2026) → Chrome `--print-to-pdf` per HTML
+  → `build_2026.py render` (appends original scan/waveform pages via PyMuPDF, then renders a tall PNG
+  view + 700px thumb into images/ and images/thumbs/).
+- Original waveform/diagram pages (ECG trace, TCD, FibroScan) are NOT translated — they are appended
+  verbatim from the source PDF (`extra=[<0-based page indices>]` in the script).
+- ⚠️ `render` appends pages to images/<name>.pdf **in place** — always re-run the Chrome step for
+  ALL categories first (resets PDFs to text-only) before running `render`, or pages double-append.
+- Records carry an optional **`pdf`** field (path to the bilingual PDF). The viewer's ⤓ Download
+  button downloads `pdf` when present (else the PNG). `records.js` is regenerated with Python here
+  (PIL for dims) because of the `pdf` field — see the inline one-liner used during the build.
+- Raw original reports are git-ignored (see `.gitignore`) to avoid publishing extra PII; only the
+  derived bilingual PDFs/PNGs are committed.
+
 ## Conventions
 - Image filename: `YYYY-MM-DD_<Place>_<TestCategory>-<TestName>_<Eye>.jpg` (date-first → sorts chronologically).
 - Eye codes: `OD` = right, `OS` = left, `OU` = both, `null` = systemic/blood.

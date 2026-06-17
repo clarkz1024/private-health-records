@@ -87,7 +87,11 @@
   .eye{position:absolute;left:8px;top:8px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.2px;color:#fff}
   .eye.OD{background:var(--od)} .eye.OS{background:var(--os)} .eye.OU{background:var(--ou)}
   .card-body{padding:10px 12px 12px}
-  .tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:3px 8px;border-radius:6px;margin-bottom:7px}
+  .tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:3px 8px;border-radius:6px;margin-bottom:7px;background:#eaeef0;color:#4b6472}
+  .tag.Summary{background:#fdeede;color:#9a6212} .tag.ECG{background:#fde7ea;color:#b21e3a}
+  .tag.Ultrasound,.tag.ChestXray{background:#e7f0fb;color:#2155a0}
+  .tag.LiverFibroScan,.tag.Urinalysis{background:#fef6e0;color:#8a6d12}
+  .tag.PulmonaryFunction,.tag.TranscranialDoppler,.tag.PhysicalExam{background:#e9f3ef;color:#1a6b4f}
   .tag.VisualField{color:var(--accent-d);background:#e2f1f0}
   .tag.OCT{color:var(--ou);background:var(--ou-bg)}
   .tag.BloodTest{color:var(--blood);background:var(--blood-bg)}
@@ -116,7 +120,9 @@
   .pswp__info .i-when{font-size:13px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#5fc9c4}
   .pswp__info .i-what{margin:6px 0 12px;font-size:20px;line-height:1.3;font-weight:700;color:#fff}
   .pswp__info .i-cat{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
-    padding:4px 10px;border-radius:999px;margin-bottom:18px}
+    padding:4px 10px;border-radius:999px;margin-bottom:18px;background:#2c3b44;color:#cdd9e0}
+  .pswp__info .i-pdf{margin-top:14px;font-size:12px;color:#9fe7e2;background:rgba(95,201,196,.12);
+    border:1px solid rgba(95,201,196,.3);border-radius:8px;padding:8px 10px}
   .pswp__info .i-cat.VisualField{background:#13534f;color:#9fe7e2}
   .pswp__info .i-cat.OCT{background:#3a2c63;color:#cdb6ff}
   .pswp__info .i-cat.BloodTest{background:#5c241e;color:#ffb3aa}
@@ -188,8 +194,8 @@ import PhotoSwipeLightbox from 'https://cdn.jsdelivr.net/npm/photoswipe@5/dist/p
 
 const DATA = window.HEALTH_DATA;
 // Cache-buster: bump this whenever image files change so browsers refetch them.
-const ASSET_V = '2026-06-17b';
-DATA.records.forEach(r=>{ r.thumb += '?v='+ASSET_V; r.full += '?v='+ASSET_V; });
+const ASSET_V = '2026-06-17c';
+DATA.records.forEach(r=>{ r.thumb += '?v='+ASSET_V; r.full += '?v='+ASSET_V; if(r.pdf) r.pdf += '?v='+ASSET_V; });
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const EYE_LABEL={OD:'Right',OS:'Left',OU:'Both'};
 
@@ -292,6 +298,7 @@ function detailsHTML(r,i){
       ${row('Result',r.result)}
       ${row('Notes',r.notes)}
     </dl>
+    ${r.pdf?'<div class="i-pdf">📄 Bilingual EN&nbsp;/&nbsp;中文 PDF — tap the ⤓ button to download</div>':''}
     <div class="i-count">Report ${i+1} of ${currentList.length}</div>`;
 }
 lightbox.on('uiRegister',()=>{
@@ -313,7 +320,8 @@ lightbox.on('uiRegister',()=>{
     name:'download',className:'pswp__button--download',order:7,isButton:true,
     title:'Download',html:'⤓',
     onClick:()=>{const r=currentList[lightbox.pswp.currIndex];if(!r)return;
-      const a=document.createElement('a');a.href=r.full;a.download=r.full.split('/').pop().split('?')[0];
+      const src=r.pdf||r.full;
+      const a=document.createElement('a');a.href=src;a.download=src.split('/').pop().split('?')[0];
       document.body.appendChild(a);a.click();a.remove();}
   });
   // info toggle button (for phones; panel is always shown on wide screens)
